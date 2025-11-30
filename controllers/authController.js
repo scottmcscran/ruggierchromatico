@@ -8,7 +8,7 @@ const User = require(`../models/userModel`);
 const AppError = require("../utils/appError");
 
 const signToken = (id) =>
-  jwt.sign({ id: id }, process.env.JWT_secret, {
+  jwt.sign({ id: id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
@@ -78,7 +78,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     return res.redirect("/login");
   }
 
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_secret);
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   const freshUser = await User.findById(decoded.id);
 
@@ -100,7 +100,7 @@ exports.isLoggedIn = async (req, res, next) => {
       // 1) Verify token
       const decoded = await promisify(jwt.verify)(
         req.cookies.jwt,
-        process.env.JWT_secret
+        process.env.JWT_SECRET
       );
 
       // 2) Check if user still exists
