@@ -1,0 +1,12 @@
+header.header
+  nav.nav.nav--tours
+    a.nav__el(href='/') For Sale
+    a.nav__el(href='/sold') Sold
+  .header__logo
+    a(href='/')
+      img(src='/img/rclogo.svg' alt='Ruggier Chromatico logo')
+  nav.nav.nav--user
+    a.nav__el(href='/about') About
+    if user
+      a.nav__el(href='/admin') Admin Dashboard
+      a.nav__el.nav__el--logout Log out

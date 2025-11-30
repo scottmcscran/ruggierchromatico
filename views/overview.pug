@@ -1,0 +1,35 @@
+extends base
+
+block content
+  main.main
+    h2.heading-secondary.ma-bt-lg= title
+    .card-container
+      each art in artworks
+        .card
+          a.card__link(href=`/artwork/${art.slug}`)
+          .card__header
+            .card__picture
+              - const imageUrl = art.image.startsWith('http') ? art.image : (art.image.includes('ruggierchromatico.com') ? `https://${art.image}` : (art.image.startsWith('art-') ? `https://ruggierchromatico.com/${art.image}` : `/img/artworks/${art.image}`))
+              img.card__picture-img(src=imageUrl, alt=`${art.title}`)
+            h3.heading-tertiary
+              span= art.title
+
+          .card__details
+            p.card__text= art.description
+            .card__data
+              if art.priceDiscount
+                span.card__price--old= `$${art.price}`
+                span.card__price--new= `$${art.priceDiscount}`
+              else
+                span= `$${art.price}`
+              
+          .card__footer
+            if art.status === 'for-sale'
+              button.btn.btn--green.btn--small.btn--buy(data-artwork-id=`${art.id}`) Buy Now
+            else if art.status === 'sold'
+              span.tag.tag--sold SOLD
+
+      
+      - for (let i = 0; i < placeholderCount; i++)
+        .card.card--placeholder
+

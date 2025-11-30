@@ -1,0 +1,136 @@
+extends base
+
+block content
+  main.main
+    .user-view
+      .user-view__content
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Admin Dashboard
+          
+          .admin-tabs
+            button.admin-tab.active(data-tab='for-sale') For Sale
+            button.admin-tab(data-tab='sold') Sold
+            button.admin-tab(data-tab='inventory') Inventory
+            button.admin-tab(data-tab='orders') Orders
+            a.admin-tab(href='/admin/analytics' style='text-decoration: none; display: inline-block;') Analytics
+
+          //- FOR SALE FORM
+          form.form.form-user-data.admin-form.active#form-for-sale
+            input(type='hidden', name='status', value='for-sale')
+            .form__group
+              label.form__label(for='title-sale') Title
+              input#title-sale.form__input(type='text', required, name='title')
+            .form__group
+              label.form__label(for='price-sale') Price
+              input#price-sale.form__input(type='number', required, name='price')
+            .form__group
+              label.form__label(for='description-sale') Description
+              textarea#description-sale.form__input(required, name='description')
+            .form__group
+              label.form__label(for='colorPalette-sale') Feeling (Optional)
+              input#colorPalette-sale.form__input(type='text', name='colorPalette')
+            .form__group
+              label.form__label(for='image-sale') Image
+              input#image-sale.form__input(type='file', accept='image/*', required, name='image')
+            .form__group
+              label.form__label(for='category-sale') Category
+              select#category-sale.form__input(name='category')
+                option(value='painting') Painting
+                option(value='carving') Carving
+            .form__group.right
+              button.btn.btn--small.btn--green Upload
+
+          //- SOLD FORM
+          form.form.form-user-data.admin-form#form-sold
+            input(type='hidden', name='status', value='sold')
+            .form__group
+              label.form__label(for='title-sold') Title
+              input#title-sold.form__input(type='text', required, name='title')
+            .form__group
+              label.form__label(for='price-sold') Sold Price
+              input#price-sold.form__input(type='number', required, name='price')
+            .form__group
+              label.form__label(for='description-sold') Description
+              textarea#description-sold.form__input(required, name='description')
+            .form__group
+              label.form__label(for='image-sold') Image
+              input#image-sold.form__input(type='file', accept='image/*', required, name='image')
+            .form__group
+              label.form__label(for='colorPalette-sold') Feeling (Optional)
+              input#colorPalette-sold.form__input(type='text', name='colorPalette')
+            .form__group
+              label.form__label(for='category-sold') Category
+              select#category-sold.form__input(name='category')
+                option(value='painting') Painting
+                option(value='carving') Carving
+            .form__group.right
+              button.btn.btn--small.btn--green Upload
+
+          //- ORDERS LIST
+          .admin-form#form-orders
+            h3.heading-tertiary Orders
+            if orders && orders.length > 0
+              .orders-list
+                each order in orders
+                  .order-card(class=order.fulfilled ? 'fulfilled' : 'unfulfilled')
+                    .order-card__header
+                      //- Since 'order' is now an Artwork document, we access title directly
+                      h4.order-card__title= order.title
+                      span.order-card__price= `$${order.price}`
+                      span.tag(class=order.fulfilled ? 'tag--sold' : 'tag--active')= order.fulfilled ? 'Fulfilled' : 'Pending'
+                    .order-card__details
+                      p.order-card__user
+                        strong User: 
+                        | #{order.buyer ? order.buyer.email : 'Unknown User'}
+                      if order.paymentId
+                        p.order-card__payment
+                           strong Payment ID: 
+                           | #{order.paymentId}
+                      p.order-card__date
+                        strong Date: 
+                        | #{order.soldAt ? order.soldAt.toLocaleDateString() : 'Unknown Date'}
+                      if order.shippingAddress
+                        .order-card__shipping
+                          p.order-card__shipping-title 
+                            strong Shipping Address:
+                          p= order.shippingAddress.name
+                          if order.shippingAddress.address
+                             p= `${order.shippingAddress.address.line1}`
+                             if order.shippingAddress.address.line2
+                               p= `${order.shippingAddress.address.line2}`
+                             p= `${order.shippingAddress.address.city}, ${order.shippingAddress.address.state} ${order.shippingAddress.address.postal_code}`
+                             p= order.shippingAddress.address.country
+                      
+                    .order-card__actions
+                      //- Use order.id (which is the artwork ID)
+                      button.btn.btn--small.btn--fulfill(data-order-id=order.id)= order.fulfilled ? 'Mark Unfulfilled' : 'Mark Fulfilled'
+            else
+              p No orders found.
+
+          //- INVENTORY LIST
+          .admin-form#form-inventory
+            h3.heading-tertiary Inventory
+            if artworks.length > 0
+              .inventory-grid
+                each art in artworks
+                  .inventory-card
+                    .inventory-card__img-box
+                      - const imageUrl = art.image.startsWith('http') ? art.image : (art.image.includes('ruggierchromatico.com') ? `https://${art.image}` : (art.image.startsWith('art-') ? `https://ruggierchromatico.com/${art.image}` : `/img/artworks/${art.image}`))
+                      img.inventory-card__img(src=imageUrl, alt=art.title)
+                    .inventory-card__details
+                      h4.inventory-card__title= art.title
+                      .inventory-card__price-box
+                        if art.priceDiscount
+                          span.inventory-card__price.inventory-card__price--old= `$${art.price}`
+                          span.inventory-card__price.inventory-card__price--new= `$${art.priceDiscount}`
+                        else
+                          span.inventory-card__price= `$${art.price}`
+                      
+                      form.inventory-card__form(data-id=art.id)
+                        .form__group.u-margin-bottom-small
+                          label.form__label(for=`discount-${art.id}`) Discount %
+                          input.form__input.form__input--small(type='number', id=`discount-${art.id}`, min='0', max='100', placeholder='0')
+                        button.btn.btn--small.btn--green.btn--update(type='submit') Update
+                        button.btn.btn--small.btn--red.btn--delete(data-id=art.id, type='button') Delete
+            else
+              p No artworks found.

@@ -1,0 +1,84 @@
+extends base
+
+block content
+  main.main
+    .user-view
+      .user-view__content
+        .user-view__form-container
+          h2.heading-secondary.ma-bt-md Analytics Dashboard
+          
+          .admin-tabs
+            a.admin-tab(href='/admin' style='text-decoration: none; display: inline-block;') Back to Dashboard
+            button.admin-tab.active(data-tab='overview') Overview
+
+          .admin-form.active
+            - const totalViews = artworks.reduce((acc, art) => acc + art.clicks, 0);
+            .analytics-summary
+              h3.heading-tertiary Sitewide Views: #{totalViews}
+              .chart-container
+                canvas#viewsChart
+
+            h3.heading-tertiary.ma-top-lg Artwork Details
+            
+            .analytics-grid
+              each art in artworks
+                .analytics-card
+                  .analytics-card__img-box
+                    - const imageUrl = art.image.startsWith('http') ? art.image : (art.image.includes('ruggierchromatico.com') ? `https://${art.image}` : (art.image.startsWith('art-') ? `https://ruggierchromatico.com/${art.image}` : `/img/artworks/${art.image}`))
+                    img.analytics-card__img(src=imageUrl, alt=`${art.title}`)
+                  .analytics-card__content
+                    h4= art.title
+                    p Clicks: #{art.clicks}
+                    p Buy Now Clicks: #{art.buyNowClicks || 0}
+                    p Status: #{art.status}
+
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  script.
+    const artworks = !{JSON.stringify(artworks)};
+    const ctx = document.getElementById('viewsChart').getContext('2d');
+    
+    const labels = artworks.map(art => art.title);
+    const data = artworks.map(art => art.clicks);
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Views',
+          data: data,
+          backgroundColor: 'rgba(192, 132, 252, 0.6)',
+          borderColor: 'rgba(126, 34, 206, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: '#fff'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#fff'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: '#fff'
+            }
+          }
+        }
+      }
+    });
