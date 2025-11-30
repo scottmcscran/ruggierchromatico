@@ -124,8 +124,13 @@ if (updateForms) {
       const { id } = e.target.dataset;
       const discountInput = document.getElementById(`discount-${id}`);
       const discountPercent = discountInput.value;
+      const expiresInput = document.getElementById(`expires-${id}`);
+      const discountExpiresAt = expiresInput.value;
 
-      const updatedArtwork = await updateArtwork(id, { discountPercent });
+      const updatedArtwork = await updateArtwork(id, {
+        discountPercent,
+        discountExpiresAt,
+      });
       if (updatedArtwork) {
         const card = e.target.closest(".inventory-card");
         const priceBox = card.querySelector(".inventory-card__price-box");
@@ -195,4 +200,42 @@ if (adminTabs) {
       }
     });
   });
+}
+
+// DISCOUNT TIMER
+const discountTimer = document.querySelector(".discount-timer");
+
+if (discountTimer) {
+  const expiresAt = new Date(discountTimer.dataset.expiresAt).getTime();
+  const countdownElement = discountTimer.querySelector(
+    ".discount-timer__countdown"
+  );
+
+  const updateTimer = () => {
+    const now = new Date().getTime();
+    const distance = expiresAt - now;
+
+    if (distance < 0) {
+      clearInterval(timerInterval);
+      discountTimer.innerHTML = "Discount Expired";
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    let timeString = "";
+    if (days > 0) timeString += `${days}d `;
+    if (hours > 0 || days > 0) timeString += `${hours}h `;
+    timeString += `${minutes}m ${seconds}s`;
+
+    countdownElement.textContent = timeString;
+  };
+
+  updateTimer(); // Run immediately
+  const timerInterval = setInterval(updateTimer, 1000);
 }

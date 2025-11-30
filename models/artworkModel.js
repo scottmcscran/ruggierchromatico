@@ -27,6 +27,9 @@ const workSchema = new mongoose.Schema({
   priceDiscount: {
     type: Number,
   },
+  discountExpiresAt: {
+    type: Date,
+  },
   description: {
     type: String,
     required: [true, `Add the description you absolute fungus gnat`],

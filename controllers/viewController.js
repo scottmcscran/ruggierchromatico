@@ -44,7 +44,9 @@ exports.getArtwork = catchAsync(async (req, res, next) => {
   const artwork = await Art.findOne({ slug: req.params.slug });
 
   if (!artwork) {
-    return next(new AppError("There is no artwork with that name.", 404));
+    return res.status(404).render("artwork404", {
+      title: "Artwork Not Found",
+    });
   }
 
   // Increment clicks on page load

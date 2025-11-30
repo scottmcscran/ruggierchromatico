@@ -70,14 +70,20 @@ exports.updateArtWork = catchAsync(async (req, res, next) => {
       req.body.priceDiscount = newPrice;
     } else if (discount === 0) {
       // Remove discount
-      req.body.priceDiscount = undefined; // Or null, depending on schema
-      // Mongoose might need $unset for undefined, let's use null or just set it equal to price?
-      // Better: set priceDiscount to null
       req.body.priceDiscount = null;
+      req.body.discountExpiresAt = null;
     }
   }
 
-  // 3) Update artwork
+  // 4) Handle Discount Expiration
+  if (req.body.discountExpiresAt) {
+    // Ensure it's a valid date or null
+    if (req.body.discountExpiresAt === "") {
+      req.body.discountExpiresAt = null;
+    }
+  }
+
+  // 5) Update artwork
   const updatedArtwork = await Art.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,

@@ -359,6 +359,10 @@ body::before {
   border-radius: 3px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .admin-tab:hover,
@@ -396,6 +400,7 @@ body::before {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 2rem;
 }
 
 .artwork-detail__content .btn--buy {
@@ -818,7 +823,7 @@ body::before {
 
 /* PLACEHOLDERS */
 .card--placeholder {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-dark);
   border: 2px dashed rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
@@ -832,18 +837,18 @@ body::before {
 .card--placeholder::after {
   content: "Coming Soon";
   position: absolute;
+  background-color: transparent;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.406);
   text-transform: uppercase;
   letter-spacing: 2px;
   display: block;
   margin: auto auto;
   width: auto;
   height: auto;
-  background-color: transparent;
 }
 
 /* ALERTS */
