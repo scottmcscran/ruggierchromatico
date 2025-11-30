@@ -6,9 +6,10 @@ const rateLimit = require(`express-rate-limit`);
 const cookieParser = require("cookie-parser");
 const app = express();
 
+app.set("trust proxy", 1);
+
 const hpp = require(`hpp`);
 
-// Global request logger
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.originalUrl}`);
   next();
@@ -94,6 +95,7 @@ const limiter = rateLimit({
   max: 1000,
   windowMs: 60 * 60 * 1000,
   message: `Request limit reached, try again in 1hr`,
+  validate: { xForwardedForHeader: false }, // Disable the check causing the error
 });
 app.use(`/api`, limiter);
 
