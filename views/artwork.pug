@@ -4,7 +4,16 @@ block content
   main.main
     .artwork-detail
       .artwork-detail__img-box
-        - const imageUrl = artwork.image.startsWith('http') ? artwork.image : (artwork.image.includes('ruggierchromatico.com') ? `https://${artwork.image}` : (artwork.image.startsWith('art-') ? `https://ruggierchromatico.com/${artwork.image}` : `/img/artworks/${artwork.image}`))
+        - 
+          let imageUrl = artwork.image;
+          if (imageUrl.startsWith('art-')) {
+            imageUrl = `https://assets.ruggierchromatico.com/${imageUrl}`;
+          } else if (imageUrl.includes('ruggierchromatico.com') && !imageUrl.includes('assets.')) {
+            imageUrl = imageUrl.replace('ruggierchromatico.com', 'assets.ruggierchromatico.com');
+            if (!imageUrl.startsWith('http')) imageUrl = `https://${imageUrl}`;
+          } else if (!imageUrl.startsWith('http')) {
+            imageUrl = `/img/artworks/${imageUrl}`;
+          }
         img.artwork-detail__img(src=imageUrl, alt=`${artwork.title}`)
       
       .artwork-detail__content
@@ -13,6 +22,10 @@ block content
           if artwork.priceDiscount
             span.artwork-detail__price.card__price--old(style="margin-right: 1rem")= `$${artwork.price}`
             span.artwork-detail__price.card__price--new= `$${artwork.priceDiscount}`
+            if artwork.discountExpiresAt
+              .discount-timer(data-expires-at=artwork.discountExpiresAt style="margin-top: 1rem; font-size: 1.6rem; color: var(--accent-pink); font-weight: bold;")
+                span Ends in: 
+                span.discount-timer__countdown Loading...
           else
             span.artwork-detail__price= `$${artwork.price}`
         

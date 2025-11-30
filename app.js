@@ -57,7 +57,13 @@ app.use(
           "https://fonts.gstatic.com",
           "https://*.stripe.com",
         ],
-        imgSrc: ["'self'", "data:", "https:", "https://*.stripe.com"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https:",
+          "https://*.stripe.com",
+          "https://assets.ruggierchromatico.com",
+        ],
         connectSrc: [
           "'self'",
           "ws://localhost:*",

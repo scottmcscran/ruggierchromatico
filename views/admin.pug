@@ -12,7 +12,7 @@ block content
             button.admin-tab(data-tab='sold') Sold
             button.admin-tab(data-tab='inventory') Inventory
             button.admin-tab(data-tab='orders') Orders
-            a.admin-tab(href='/admin/analytics' style='text-decoration: none; display: inline-block;') Analytics
+            a.admin-tab(href='/admin/analytics' style='text-decoration: none;') Analytics
 
           //- FOR SALE FORM
           form.form.form-user-data.admin-form.active#form-for-sale
@@ -115,7 +115,16 @@ block content
                 each art in artworks
                   .inventory-card
                     .inventory-card__img-box
-                      - const imageUrl = art.image.startsWith('http') ? art.image : (art.image.includes('ruggierchromatico.com') ? `https://${art.image}` : (art.image.startsWith('art-') ? `https://ruggierchromatico.com/${art.image}` : `/img/artworks/${art.image}`))
+                      - 
+                        let imageUrl = art.image;
+                        if (imageUrl.startsWith('art-')) {
+                          imageUrl = `https://assets.ruggierchromatico.com/${imageUrl}`;
+                        } else if (imageUrl.includes('ruggierchromatico.com') && !imageUrl.includes('assets.')) {
+                          imageUrl = imageUrl.replace('ruggierchromatico.com', 'assets.ruggierchromatico.com');
+                          if (!imageUrl.startsWith('http')) imageUrl = `https://${imageUrl}`;
+                        } else if (!imageUrl.startsWith('http')) {
+                          imageUrl = `/img/artworks/${imageUrl}`;
+                        }
                       img.inventory-card__img(src=imageUrl, alt=art.title)
                     .inventory-card__details
                       h4.inventory-card__title= art.title
@@ -130,6 +139,9 @@ block content
                         .form__group.u-margin-bottom-small
                           label.form__label(for=`discount-${art.id}`) Discount %
                           input.form__input.form__input--small(type='number', id=`discount-${art.id}`, min='0', max='100', placeholder='0')
+                        .form__group.u-margin-bottom-small
+                          label.form__label(for=`expires-${art.id}`) Expires At
+                          input.form__input.form__input--small(type='datetime-local', id=`expires-${art.id}`, value=art.discountExpiresAt ? art.discountExpiresAt.toISOString().slice(0, 16) : '')
                         button.btn.btn--small.btn--green.btn--update(type='submit') Update
                         button.btn.btn--small.btn--red.btn--delete(data-id=art.id, type='button') Delete
             else

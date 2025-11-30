@@ -9,7 +9,16 @@ block content
           a.card__link(href=`/artwork/${art.slug}`)
           .card__header
             .card__picture
-              - const imageUrl = art.image.startsWith('http') ? art.image : (art.image.includes('ruggierchromatico.com') ? `https://${art.image}` : (art.image.startsWith('art-') ? `https://ruggierchromatico.com/${art.image}` : `/img/artworks/${art.image}`))
+              - 
+                let imageUrl = art.image;
+                if (imageUrl.startsWith('art-')) {
+                  imageUrl = `https://assets.ruggierchromatico.com/${imageUrl}`;
+                } else if (imageUrl.includes('ruggierchromatico.com') && !imageUrl.includes('assets.')) {
+                  imageUrl = imageUrl.replace('ruggierchromatico.com', 'assets.ruggierchromatico.com');
+                  if (!imageUrl.startsWith('http')) imageUrl = `https://${imageUrl}`;
+                } else if (!imageUrl.startsWith('http')) {
+                  imageUrl = `/img/artworks/${imageUrl}`;
+                }
               img.card__picture-img(src=imageUrl, alt=`${art.title}`)
             h3.heading-tertiary
               span= art.title
