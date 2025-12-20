@@ -279,6 +279,10 @@ body::before {
   z-index: 2;
 }
 
+#purpose {
+  margin-top: 3rem;
+}
+
 /* TAGS */
 .tag {
   font-size: 1.2rem;
